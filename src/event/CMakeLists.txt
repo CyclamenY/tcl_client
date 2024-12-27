@@ -1,10 +1,10 @@
-# 设置lib名
+# set library name
 set(LIB_NAME event)
-# 构建静态库
+# generate library
 add_library(${LIB_NAME} STATIC event.cc)
-# 指定库头文件路径
+# set include directory
 target_include_directories(${LIB_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/inc)
-# 设置库文件输出目录
+# set library output
 set_target_properties(${LIB_NAME} PROPERTIES
   ARCHIVE_OUTPUT_NAME_RELEASE ${LIB_NAME}
   ARCHIVE_OUTPUT_NAME_DEBUG ${LIB_NAME}_d
