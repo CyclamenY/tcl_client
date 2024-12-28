@@ -34,5 +34,4 @@
 
 build/*
 lib/*
-*.cmake
 *.conf
