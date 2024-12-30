@@ -1,10 +1,10 @@
 # set library name
-set(LIB_NAME gui)
+set(LIB_NAME tcl)
 # genearer library
-add_library(${LIB_NAME} STATIC main_window.cc)
+add_library(${LIB_NAME} STATIC tcl_command.cc)
 # add header file
 target_sources(${LIB_NAME} PRIVATE 
-  ${CMAKE_SOURCE_DIR}/inc/${LIB_NAME}/main_window.h
+  ${CMAKE_SOURCE_DIR}/inc/${LIB_NAME}/tcl_command.h
 )
 # set include directory
 target_include_directories(${LIB_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/inc)

@@ -4,11 +4,7 @@ set(REF_LIB ${REF_LIB_TOP_PATH}/tcl8.6.15/lib/tcl86tg.lib
             ${REF_LIB_TOP_PATH}/tcl8.6.15/lib/tclstub86.lib)
 
 # add executable
-if(ARCH STREQUAL "x86_64")
-  add_executable(${PROJECT_NAME} WIN32 main.cc)
-else()
-  add_executable(${PROJECT_NAME} main.cc)
-endif()
+add_executable(${PROJECT_NAME} main.cc)
 # link library
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   link_directories(${CMAKE_SOURCE_DIR}/lib/Debug)
