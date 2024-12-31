@@ -6,14 +6,18 @@
 
 #include <vector>
 
-typedef int(*CommandFunc)(ClientData, Tcl_Interp*, int, const Tcl_Obj*);
+typedef int(*CommandFunc)(ClientData data, Tcl_Interp* interp, int objc, Tcl_Obj* const objv[]);
 
 int TclInitProc(Tcl_Interp* interp);
+int RegisterAllCmds(Tcl_Interp* interp);
 
 class Commands {
 public:
   static Commands* instance();
+  static bool isOptionUsed(const int objc, Tcl_Obj* const objv[], const char* optionName);
+  static int getOptionIndex(const int objc, Tcl_Obj* const objv[], const char* optionName);
   void setInterp(Tcl_Interp* interp) { interp_ = interp; }
+  void registerCmd(Tcl_Interp*, const std::string, const std::string, CommandFunc);
 protected:
   Commands() {}
   ~Commands() {}

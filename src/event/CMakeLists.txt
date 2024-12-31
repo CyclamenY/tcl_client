@@ -1,7 +1,7 @@
 # set library name
 set(LIB_NAME event)
 # generate library
-add_library(${LIB_NAME} STATIC event.cc)
+add_library(${LIB_NAME} STATIC event.cc event_tcl.cc)
 # add header file
 target_sources(${LIB_NAME} PRIVATE 
   ${CMAKE_SOURCE_DIR}/inc/${LIB_NAME}/event.h
