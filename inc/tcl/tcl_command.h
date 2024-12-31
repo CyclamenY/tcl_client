@@ -2,6 +2,7 @@
 #define TCL_COMMAND_H_
 
 #include <tcl.h>
+#include <string>
 
 #include <vector>
 

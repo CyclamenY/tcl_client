@@ -3,7 +3,9 @@ cmake_minimum_required(VERSION 3.10)
 project(tclClient)
 
 set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOUIC_OUTPUT_DIR "${CMAKE_SOURCE_DIR}/include/uic")
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOMOC_OUTPUT_DIR "${CMAKE_SOURCE_DIR}/src/moc")
 set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 11)
@@ -12,9 +14,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include(proj.cmake)
 
-include_directories(inc)
-include_directories(ref/x86_64/lib/tcl8.6.15/include)
-include_directories(${CMAKE_PREFIX_PATH}/include)
+include_directories(inc)                                # private include
+include_directories(ref/x86_64/lib/tcl8.6.15/include)   # 3rd lib include
+include_directories(${CMAKE_PREFIX_PATH}/include)       # Qt5 include
 foreach(_module ${QT_MODULES})
   find_package(QT NAMES Qt5 REQUIRED COMPONENTS ${_module})
   find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS ${_module})
