@@ -3,4 +3,4 @@ set(QT_MODULES "Widgets" "Core")
 set(QT_DLLS "Widgets" "Gui" "Core")
 set(REF_LIB_TOP_PATH ${CMAKE_SOURCE_DIR}/ref/${ARCH}/lib)
 
-set(modules event gui tcl)
+set(modules event gui tcl log)
