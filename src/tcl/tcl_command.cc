@@ -140,9 +140,7 @@ int Commands::preRun(const int objc, Tcl_Obj* const objv[]) {
           if (next_option[0] == '-') return TCL_ERROR;
           try {
             std::stoi(next_option);
-          } catch (const std::invalid_argument& e) {
-            return TCL_ERROR;
-          } catch (const std::out_of_range& e) {
+          } catch (...) {
             return TCL_ERROR;
           }
           break;

@@ -1,6 +1,7 @@
 #include "event/event.h"
 #include "gui/main_window.h"
 #include "tcl/tcl_command.h"
+#include "log/log.h"
 #include <tcl.h>
 
 #include <iostream>
@@ -66,6 +67,7 @@ int main(int argc, char* argv[]) {
     ret_value = app.exec();
   } else {
     attachConsole();
+    Log::instanse();
     Tcl_Main(argc, argv, TclInitProc);
   }
   return TCL_OK;

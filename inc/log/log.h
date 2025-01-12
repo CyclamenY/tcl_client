@@ -1,10 +1,11 @@
 #ifndef LOG_H_H_
 #define LOG_H_H_
 
-#include <stdio.h>
+#include <iostream>
 #include <stdlib.h>
-#include <string.h>
+#include <string>
 #include <time.h>
+#include <fstream>
 
 #define LOG_INFO 0
 #define LOG_WARN 1
@@ -18,24 +19,29 @@ typedef bool(*GuiLogFunc)();
 
 class Log {
 public:
-  Log* instanse() {
+  static Log* instanse() {
     if (log_ == NULL) {
       log_ = new Log();
     }
     return log_;
   }
-  static bool printInfo();
+  static bool printInfo(const char* format, ...);
   static bool printWarn();
   static bool printError();
   static bool printDebug();
 
 protected:
-  Log() {}
-  ~Log() {}
+  Log();
+  ~Log();
+  std::string locLogDir();
+  bool createWindowsLogFile(std::string& path);
+#ifndef WIN32
+  bool createLinuxLogFile(std::string& path);
+#endif
 
 private:
   static Log* log_;
-  FILE* logFile_;
+  std::ofstream logFile_;
   GuiLogFunc guiLogFunc_;
 };
 
