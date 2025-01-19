@@ -1,45 +1,24 @@
 #include "event/event.h"
-#include "gui/main_window.h"
+#include "gui/gui.h"
 #include "tcl/tcl_command.h"
 #include "log/log.h"
-#include <tcl.h>
 
+#include <tcl.h>
 #include <iostream>
-#include <QApplication>
-#include <QCoreApplication>
 #include <vector>
 #ifdef WIN32
-#include "windows.h"
+#include <windows.h>
 #endif
 
-//int main(int argc, char *argv[]) {
-//  int i = 0;
-//  Tcl_Interp* interp = Tcl_CreateInterp();
-//  Tcl_Channel stdOut = Tcl_GetStdChannel(TCL_STDOUT);
-//  if(stdOut != NULL)
-//    Tcl_UnregisterChannel(interp, stdOut);
-//  Tcl_Channel chan = Tcl_OpenFileChannel(interp, "file1.txt", "w+", 777);
-//  Tcl_RegisterChannel(interp, chan);
-//  Tcl_SetStdChannel(chan, TCL_STDOUT);
-//  if (Tcl_Init(interp) != TCL_OK) {
-//    std::cout << "error" << std::endl;
-//    return TCL_ERROR;
-//  }
-//  Tcl_FindExecutable(nullptr);
-//  std::string cmd = "set t 3; puts $t";
-//  if (Tcl_Eval(interp, cmd.c_str()) != TCL_OK) {
-//    std::cout << "error" << std::endl;
-//    return TCL_ERROR;
-//  }
-//  Tcl_DeleteInterp(interp);
-//  // Tcl_Init(NULL);
-//  QApplication a(argc, argv);
-//  Event event(1);
-//  std::cout << "test " << event.getNum() << std::endl;
-//  MainWindow main_window;
-//  main_window.show();
-//  return a.exec();
-//}
+long __stdcall CrashCallback(_EXCEPTION_POINTERS* excp) {
+  char buf[256] = { 0 };
+  sprintf(buf, "Error address: %p", excp->ExceptionRecord->ExceptionAddress);
+  return EXCEPTION_EXECUTE_HANDLER;
+}
+
+void ExitHandler(void*) {
+  printf("Thank you for using tclClient.\n");
+}
 
 void attachConsole() {
   AllocConsole();
@@ -58,16 +37,17 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  int ret_value = TCL_OK;
+#ifdef WIN32
+  SetUnhandledExceptionFilter(CrashCallback);
+#endif
+  Tcl_CreateExitHandler(ExitHandler, NULL);
 
   if (isGui) {
-    QApplication app(argc, argv);
-    MainWindow main_window;
-    main_window.show();
-    ret_value = app.exec();
+    Log::instanse()->guiInit();
+    Gui::initGui(argc, argv);
   } else {
     attachConsole();
-    Log::instanse();
+    Log::instanse()->procInit();
     Tcl_Main(argc, argv, TclInitProc);
   }
   return TCL_OK;

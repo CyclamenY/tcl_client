@@ -7,13 +7,15 @@
 #include <time.h>
 #include <fstream>
 
-#define LOG_INFO 0
-#define LOG_WARN 1
-#define LOG_ERROR 2
+#define LOG_DEBUG 0
+#define LOG_INFO 1
+#define LOG_WARN 2
+#define LOG_ERROR 3
 
-#define LOG_INFO_STR "INFO"
-#define LOG_WARN_STR "WARN"
-#define LOG_ERROR_STR "ERROR"
+#define LOG_DEBUG_STR "[DEBUG] "
+#define LOG_INFO_STR "[INFO] "
+#define LOG_WARN_STR "[WARN] "
+#define LOG_ERROR_STR "[ERROR] "
 
 typedef bool(*GuiLogFunc)();
 
@@ -25,10 +27,12 @@ public:
     }
     return log_;
   }
+  bool procInit();
+  bool guiInit();
+  static bool printDebug(const char* format, ...);
   static bool printInfo(const char* format, ...);
-  static bool printWarn();
-  static bool printError();
-  static bool printDebug();
+  static bool printWarn(const char* format, ...);
+  static bool printError(const char* format, ...);
 
 protected:
   Log();
@@ -38,6 +42,7 @@ protected:
 #ifndef WIN32
   bool createLinuxLogFile(std::string& path);
 #endif
+  bool print(int log_level, const char* msg);
 
 private:
   static Log* log_;

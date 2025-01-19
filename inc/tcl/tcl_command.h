@@ -31,7 +31,7 @@ public:
   void setInterp(Tcl_Interp* interp) { interp_ = interp; }
   int registerCmd(Tcl_Interp*, const std::string, const std::string, CommandFunc);
 protected:
-  Commands() {}
+  Commands() : interp_(nullptr) {}
   ~Commands() {}
 private:
   static Commands* instance_;

@@ -1,4 +1,5 @@
 #include "tcl/tcl_command.h"
+#include "log/log.h"
 
 #include <algorithm>
 #include <sstream>
@@ -92,8 +93,9 @@ int TclInitProc(Tcl_Interp* interp) {
 int RegisterAllCmds(Tcl_Interp* interp) {
   Commands* commands = Commands::instance();
   commands->setInterp(interp);
-
+#ifdef _DEBUG
   commands->registerCmd(interp, "add_func", "-test -test1 <string>", AddFunc);
+#endif
 
   return TCL_OK;
 }
@@ -114,7 +116,7 @@ int Commands::preRun(const int objc, Tcl_Obj* const objv[]) {
     if (option.length() && option[0] == '-') {
       auto iter = args.find(option);
       if (iter == args.end()) {
-        std::cout << "error option " << option << std::endl;
+        Log::printError("Error option %s\n", option.c_str());
         return TCL_ERROR;
       }
       switch (iter->second) {
@@ -161,7 +163,6 @@ int Commands::postRun() {
 
   auto end = std::chrono::high_resolution_clock::now();
   auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - instance_->start_);
-  std::cout << "esplaed time " << duration.count() / 1000.0 << "s" << std::endl;
-
+  Log::printInfo("Elapsed time: %.2fs\n", duration.count() / 1000.0);
   return TCL_OK;
 }

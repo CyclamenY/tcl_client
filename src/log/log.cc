@@ -18,16 +18,32 @@
 
 Log* Log::log_ = nullptr;
 
-Log::Log() {
+bool Log::procInit() {
   std::string running_path = locLogDir();
   if (running_path.empty()) {
     std::cout << "Can not loc exe loc!" << std::endl;
   }
 #ifdef WIN32
-  createWindowsLogFile(running_path);
+  return createWindowsLogFile(running_path);
 #else
-  createLinuxLogFile(running_path);
+  return createLinuxLogFile(running_path);
 #endif
+}
+
+bool Log::guiInit() {
+  std::string running_path = locLogDir();
+  if (running_path.empty()) {
+    std::cout << "Can not loc exe loc!" << std::endl;
+  }
+#ifdef WIN32
+  return createWindowsLogFile(running_path);
+#else
+  return createLinuxLogFile(running_path);
+#endif
+}
+
+Log::Log() {
+  
 }
 
 Log::~Log() {
@@ -171,6 +187,16 @@ bool Log::createLinuxLogFile(std::string& path) {
 }
 #endif
 
+bool Log::printDebug(const char* format, ...) {
+  char buffer[2048];
+  va_list args;
+  va_start(args, format);
+  int result = vsnprintf(buffer, 2048, format, args);
+  va_end(args);
+
+  return log_->print(0, buffer);
+}
+
 bool Log::printInfo(const char* format, ...) {
   char buffer[2048];
   va_list args;
@@ -178,19 +204,53 @@ bool Log::printInfo(const char* format, ...) {
   int result = vsnprintf(buffer, 2048, format, args);
   va_end(args);
 
-  std::cout << buffer;
+  return log_->print(1, buffer);
+}
+
+bool Log::printWarn(const char* format, ...) {
+  char buffer[2048];
+  va_list args;
+  va_start(args, format);
+  int result = vsnprintf(buffer, 2048, format, args);
+  va_end(args);
+
+  return log_->print(2, buffer);
+}
+
+bool Log::printError(const char* format, ...) {
+  char buffer[2048];
+  va_list args;
+  va_start(args, format);
+  int result = vsnprintf(buffer, 2048, format, args);
+  va_end(args);
+
+  return log_->print(3, buffer);
+}
+
+bool Log::print(int log_level, const char* msg) {
+  std::string header;
+  switch (log_level) {
+    case LOG_DEBUG:
+      header = LOG_DEBUG_STR; break;
+    //case LOG_INFO:
+    //  header = LOG_INFO_STR; break;
+    case LOG_WARN:
+      header = LOG_WARN_STR; break;
+    case LOG_ERROR:
+      header = LOG_ERROR_STR; break;
+  }
+  std::cout << header << msg;
 #ifdef WIN32
   fflush(stdout);
 #endif
 
-  if (!log_->logFile_.is_open()) {
+  if (!logFile_.is_open()) {
     std::cerr << "logfile is bad!" << std::endl;
     return false;
   }
-  log_->logFile_ << buffer;
+  logFile_ << header << msg;
 #ifdef WIN32
-  log_->logFile_.flush();
+  logFile_.flush();
 #endif
-
   return true;
 }
