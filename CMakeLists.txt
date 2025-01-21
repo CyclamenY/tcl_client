@@ -40,10 +40,17 @@ if(MSVC)
   endif()
 endif()
 
-message("-- C Tool Chain: ${CMAKE_C_COMPILER}")
-message("-- C++ Tool Chain: ${CMAKE_CXX_COMPILER}")
-message("-- Compile Mode: ${CMAKE_BUILD_TYPE}")
+message(STATUS "C Tool Chain: ${CMAKE_C_COMPILER}")
+message(STATUS "C++ Tool Chain: ${CMAKE_CXX_COMPILER}")
+message(STATUS "Compile Mode: ${CMAKE_BUILD_TYPE}")
 
-set(REF_LIB_TOP_PATH ${CMAKE_SOURCE_DIR}/ref/${ARCH}/lib)
+# get current git info
+get_git_branch(GIT_BRANCH)
+message(STATUS "Current Git Branch: ${GIT_BRANCH}")
+get_git_hash(GIT_TAG)
+message(STATUS "Current Git Hash: ${GIT_TAG}")
+
+string(TIMESTAMP COMPILE_TIME "%Y-%m-%d %H:%M:%S")
+message(STATUS "Current Compile Time: ${COMPILE_TIME}")
 
 add_subdirectory(src)

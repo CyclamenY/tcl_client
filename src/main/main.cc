@@ -6,6 +6,7 @@
 #include <tcl.h>
 #include <iostream>
 #include <vector>
+#include <time.h>
 #ifdef WIN32
 #include <windows.h>
 #endif
@@ -26,7 +27,28 @@ void attachConsole() {
   freopen_s(&fDummy, "CONOUT$", "w", stdout);
   freopen_s(&fDummy, "CONOUT$", "w", stderr);
   freopen_s(&fDummy, "CONIN$", "r", stdin);
-  SetConsoleTitle("tclClient Console");
+#ifdef _DEBUG
+  SetConsoleTitle("tclClient Console Debug");
+#else
+  SetConsoleTitle("tclClient Console Release");
+#endif
+}
+
+void printWelcomeInfo() {
+#ifdef _DEBUG
+  Log::printInfo("tclClient Debug Ver.\n");
+#else
+  Log::printInfo("tclClient Release Ver.\n");
+#endif
+  Log::printInfo("Build Git Hash: %s\n", GIT_TAG);
+  Log::printInfo("Build Start Time: %s\n", COMPILE_TIME);
+  time_t t = time(NULL);
+  struct tm* stime = localtime(&t);
+  char time_str[32]{ 0 };
+  snprintf(time_str, sizeof(time_str),
+    "%04d-%02d-%02d %02d:%02d:%02d", 
+    1900 + stime->tm_year, 1 + stime->tm_mon, stime->tm_mday, stime->tm_hour, stime->tm_min, stime->tm_sec);
+  Log::printInfo("Launch Start Time: %s\n", time_str);
 }
 
 int main(int argc, char* argv[]) {
@@ -48,6 +70,8 @@ int main(int argc, char* argv[]) {
   } else {
     attachConsole();
     Log::instanse()->procInit();
+    // print compile info
+    printWelcomeInfo();
     Tcl_Main(argc, argv, TclInitProc);
   }
   return TCL_OK;
