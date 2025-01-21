@@ -119,7 +119,7 @@ bool Log::createWindowsLogFile(std::string& path) {
       }
     }
     std::string old_path = path + "\\tclClient.log";
-    if (_access(old_path.c_str(), 0) == -1) {
+    if (_access(old_path.c_str(), 0) == 0) {
       std::string new_path = path + "\\tclClient_1.log";
       if (!MoveFile(old_path.c_str(), new_path.c_str())) {
         std::cerr << "Failed to rename file: " << old_path << std::endl;

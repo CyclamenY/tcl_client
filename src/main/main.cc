@@ -26,7 +26,7 @@ void attachConsole() {
   freopen_s(&fDummy, "CONOUT$", "w", stdout);
   freopen_s(&fDummy, "CONOUT$", "w", stderr);
   freopen_s(&fDummy, "CONIN$", "r", stdin);
-  SetConsoleTitle("App Console");
+  SetConsoleTitle("tclClient Console");
 }
 
 int main(int argc, char* argv[]) {
