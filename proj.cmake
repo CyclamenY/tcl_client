@@ -1,12 +1,10 @@
 # define var
-if(WORKFLOW STREQUAL "github")
-  set(MY_PATH "")
-  set(QT_QPA_PLATFORM_PLUGIN_PATH "")
-else()
-  set(CMAKE_PREFIX_PATH "F:/software/Qt/msvc2022_x64")
-  set(MY_PATH "F:/software/Qt/msvc2022_x64/bin;F:/software/tcl8.6.15/bin")
-  set(QT_QPA_PLATFORM_PLUGIN_PATH "F:/software/Qt/msvc2022_x64/plugins/platforms")
+if(NOT DEFINED QT_ROOT_DIR)
+  set(QT_ROOT_DIR "F:/software/Qt/msvc2022_x64")  # for native build
 endif()
+set(CMAKE_PREFIX_PATH "${QT_ROOT_DIR}")
+set(MY_PATH "F:/software/Qt/msvc2022_x64/bin;F:/software/tcl8.6.15/bin")
+set(QT_QPA_PLATFORM_PLUGIN_PATH "F:/software/Qt/msvc2022_x64/plugins/platforms")
 
 set(QT_MODULES "Widgets" "Core")
 set(QT_DLLS "Widgets" "Gui" "Core")

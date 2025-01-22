@@ -1,5 +1,3 @@
-include(../../proj.cmake)
-
 set(REF_LIB ${REF_LIB_TOP_PATH}/tcl8.6.15/lib/tcl86tg.lib 
             ${REF_LIB_TOP_PATH}/tcl8.6.15/lib/tclstub86.lib)
 
