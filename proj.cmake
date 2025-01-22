@@ -1,7 +1,5 @@
 # define var
 if(WORKFLOW STREQUAL "github")
-  message(STATUS ${QT_ROOT_DIR})
-  set(CMAKE_PREFIX_PATH "${QT_ROOT_DIR}")
   set(MY_PATH "")
   set(QT_QPA_PLATFORM_PLUGIN_PATH "")
 else()
