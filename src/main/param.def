@@ -1,4 +1,0 @@
-#ifndef PARAM_DEF_ 
-#define PARAM_DEF_ 
-#define COMPILE_TIME "2025-01-24 15:55:30" 
-#endif 
