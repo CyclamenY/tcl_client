@@ -2,6 +2,7 @@
 #include "gui/gui.h"
 #include "tcl/tcl_command.h"
 #include "log/log.h"
+#include "param.def"
 
 #include <tcl.h>
 #include <iostream>

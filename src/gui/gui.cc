@@ -42,6 +42,11 @@ int Gui::TclInitGui(Tcl_Interp* interp) {
   // init gui
   main_window_ = new MainWindow();
   main_window_->setMinimumSize(800, 600);
+#ifdef _DEBUG
+  main_window_->setWindowTitle("tclClient Debug Ver.");
+#else
+  main_window_->setWindowTitle("tclClient Release Ver.");
+#endif
   main_window_->show();
   exit(app_->exec());
   return TCL_OK;

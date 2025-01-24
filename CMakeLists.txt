@@ -50,7 +50,4 @@ message(STATUS "Current Git Branch: ${GIT_BRANCH}")
 get_git_hash(GIT_TAG)
 message(STATUS "Current Git Hash: ${GIT_TAG}")
 
-string(TIMESTAMP COMPILE_TIME "%Y-%m-%d %H:%M:%S")
-message(STATUS "Current Compile Time: ${COMPILE_TIME}")
-
 add_subdirectory(src)

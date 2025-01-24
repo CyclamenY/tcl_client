@@ -24,7 +24,13 @@ set_property(TARGET ${PROJECT_NAME} PROPERTY
   VS_DEBUGGER_ENVIRONMENT "PATH=%PATH%;${MY_PATH};QT_QPA_PLATFORM_PLUGIN_PATH=${QT_QPA_PLATFORM_PLUGIN_PATH}")
 set_property(TARGET ${PROJECT_NAME} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 # add definitions
-add_definitions(-DGIT_TAG="${GIT_TAG}" -DGIT_BRANCH="${GIT_BRANCH}" -DCOMPILE_TIME="${COMPILE_TIME}")
+add_definitions(-DGIT_TAG="${GIT_TAG}" -DGIT_BRANCH="${GIT_BRANCH}")
+
+add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
+  COMMAND ${CMAKE_SOURCE_DIR}/script/pre_build.bat
+  "${CMAKE_SOURCE_DIR}/src/main/param.def"
+  COMMENT "Copying dll files to ${CMAKE_BINARY_DIR}/bin"
+)
 
 # copy dll
 # add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD

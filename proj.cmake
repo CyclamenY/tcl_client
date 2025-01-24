@@ -35,4 +35,4 @@ macro(get_git_branch _git_branch)
   endif()
 endmacro()
 
-set(modules event gui tcl log)
+set(modules event gui tcl log utility)

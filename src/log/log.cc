@@ -1,11 +1,12 @@
 #include "log/log.h"
+#include "utility/utility.h"
 
 #include <algorithm>
 #include <cstdarg>
 #include <cstdio>
 #ifdef WIN32
 #include <windows.h>
-#include <direct.h>
+//#include <direct.h>
 #include <io.h>
 #endif
 #ifndef WIN32
@@ -53,83 +54,49 @@ Log::~Log() {
 
 std::string Log::locLogDir() {
   std::string running_path = "";
-  char buffer[MAX_PATH];
-#ifdef WIN32
-  GetModuleFileName(NULL, buffer, MAX_PATH);
-  auto pos = std::string(buffer).find_last_of("\\/");
-  running_path = std::string(buffer).substr(0, pos);
-  std::replace(running_path.begin(), running_path.end(), '\\/', '/\\');
+  running_path = Utility::getCurrentPwdPath();
   running_path += "\\logfiles";
-  if (_access(running_path.c_str(), 0) == -1) {
-    if (_mkdir(running_path.c_str()) != 0) {
-      std::cout << "Can not create logfiles dir!" << std::endl;
-    }
-  }
-#else
-  ssize_t count = readlink("/proc/self/exe", buffer, PATH_MAX);
-  auto pos = std::string(buffer).find_last_of("/\\");
-  running_path = std::string(buffer).substr(0, pos) + "\\logfiles";
-  if (access(running_path, F_OK) == -1) {
-    if (mkdir(running_path, 0777) != 0) {
-      std::cout << "Can not create logfiles dir!" << std::endl;
-    }
-  }
-#endif
   return running_path;
 }
 
 bool Log::createWindowsLogFile(std::string& path) {
   int max_num = 0;
+  std::vector<std::string> fileVec;
 
-  WIN32_FIND_DATA findFileData;
-  HANDLE hFind = INVALID_HANDLE_VALUE;
+  Utility::getDirFiles(path, fileVec);
+  for (std::string fileName : fileVec) {
+    std::string prefix = fileName.substr(0, 10);
+    auto pos = fileName.find_last_of('.');
+    std::string num_str = fileName.substr(10, pos - 10);
+    if (prefix == "tclClient_") {
+      try {
+        max_num = max(max_num, std::stoi(num_str));
+      } catch (...) {
+        continue;
+      }
+    }
+  }
 
-  std::string search_path = path + "\\*";
-  hFind = FindFirstFile(search_path.c_str(), &findFileData);
-
-  if (hFind == INVALID_HANDLE_VALUE) {
-    std::cerr << "FindFirstFile failed (" << GetLastError() << ")" << std::endl;
+  for (; max_num > 0; --max_num) {
+    std::string old_path = path + "\\tclClient_" + std::to_string(max_num) + ".log";
+    if (_access(old_path.c_str(), 0) == -1)
+      continue;
+    std::string new_path = path + "\\tclClient_" + std::to_string(max_num + 1) + ".log";
+    if (!MoveFile(old_path.c_str(), new_path.c_str())) {
+      std::cerr << "Failed to rename file: " << old_path << std::endl;
+    }
+  }
+  std::string old_path = path + "\\tclClient.log";
+  if (_access(old_path.c_str(), 0) == 0) {
+    std::string new_path = path + "\\tclClient_1.log";
+    if (!MoveFile(old_path.c_str(), new_path.c_str())) {
+      std::cerr << "Failed to rename file: " << old_path << std::endl;
+    }
+  }
+  logFile_.open(old_path.c_str());
+  if (!logFile_.is_open()) {
+    std::cerr << "Can not open file: " << old_path << std::endl;
     return false;
-  } else {
-    do {
-      std::string fileName = findFileData.cFileName;
-      if (fileName == "." || fileName == "..")
-        continue;
-      std::string prefix = fileName.substr(0, 10);
-      auto pos = fileName.find_last_of('.');
-      std::string num_str = fileName.substr(10, pos - 10);
-      if (prefix == "tclClient_") {
-        try {
-          max_num = max(max_num, std::stoi(num_str));
-        } catch (...) {
-          continue;
-        }
-      }
-    } while (FindNextFile(hFind, &findFileData) != 0);
-
-    FindClose(hFind);
-
-    for (; max_num > 0; --max_num) {
-      std::string old_path = path + "\\tclClient_" + std::to_string(max_num) + ".log";
-      if (_access(old_path.c_str(), 0) == -1)
-        continue;
-      std::string new_path = path + "\\tclClient_" + std::to_string(max_num + 1) + ".log";
-      if (!MoveFile(old_path.c_str(), new_path.c_str())) {
-        std::cerr << "Failed to rename file: " << old_path << std::endl;
-      }
-    }
-    std::string old_path = path + "\\tclClient.log";
-    if (_access(old_path.c_str(), 0) == 0) {
-      std::string new_path = path + "\\tclClient_1.log";
-      if (!MoveFile(old_path.c_str(), new_path.c_str())) {
-        std::cerr << "Failed to rename file: " << old_path << std::endl;
-      }
-    }
-    logFile_.open(old_path.c_str());
-    if (!logFile_.is_open()) {
-      std::cerr << "Can not open file: " << old_path << std::endl;
-      return false;
-    }
   }
   return true;
 }
@@ -137,52 +104,42 @@ bool Log::createWindowsLogFile(std::string& path) {
 #ifndef WIN32
 bool Log::createLinuxLogFile(std::string& path) {
   int max_num = 0;
+  std::vector<std::string> fileVec;
 
-  DIR* dir;
-  struct dirent* ent;
-
-  if ((dir = opendir(path.c_str())) != NULL) {
-    while ((ent = readdir(dir)) != NULL) {
-      std::string fileName = ent->d_name;
-      if (fileName == "." || fileName == "..")
+  Utility::getDirFiles(path, fileVec);
+  for (std::string fileName : fileVec) {
+    std::string prefix = fileName.substr(0, 10);
+    auto pos = fileName.find_last_of('.');
+    std::string num_str = fileName.substr(10, pos - 10);
+    if (prefix == "tclClient_") {
+      try {
+        max_num = max(max_num, std::stoi(num_str));
+      } catch (...) {
         continue;
-      std::string prefix = fileName.substr(0, 10);
-      auto pos = fileName.find_last_of('.');
-      std::string num_str = fileName.substr(10, pos - 10);
-      if (prefix == "tclClient_") {
-        try {
-          max_num = max(max_num, std::stoi(num_str));
-        } catch (...) {
-          continue;
-        }
       }
     }
-    closedir(dir);
-
-    for (; max_num > 0; --max_num) {
-      std::string old_path = path + "\\tclClient_" + std::to_string(max_num) + ".log";
-      if (access(old_path.c_str(), F_OK) == -1)
-        continue;
-      std::string new_path = path + "\\tclClient_" + std::to_string(max_num + 1) + ".log";
-      if (!MoveFile(old_path.c_str(), new_path.c_str())) {
-        std::cerr << "Failed to rename file: " << old_path << std::endl;
-      }
+  }
+  for (; max_num > 0; --max_num) {
+    std::string old_path = path + "\\tclClient_" + std::to_string(max_num) + ".log";
+    if (access(old_path.c_str(), F_OK) == -1)
+      continue;
+    std::string new_path = path + "\\tclClient_" + std::to_string(max_num + 1) + ".log";
+    if (!MoveFile(old_path.c_str(), new_path.c_str())) {
+      std::cerr << "Failed to rename file: " << old_path << std::endl;
     }
-    std::string old_path = path + "\\tclClient.log";
-    if (access(old_path.c_str(), F_OK) == -1) {
-      std::string new_path = path + "\\tclClient_1.log";
-      if (!MoveFile(old_path.c_str(), new_path.c_str())) {
-        std::cerr << "Failed to rename file: " << old_path << std::endl;
-      }
+  }
+  std::string old_path = path + "\\tclClient.log";
+  if (access(old_path.c_str(), F_OK) == -1) {
+    std::string new_path = path + "\\tclClient_1.log";
+    if (!MoveFile(old_path.c_str(), new_path.c_str())) {
+      std::cerr << "Failed to rename file: " << old_path << std::endl;
     }
-    if (!logFile_.is_open()) {
-      std::cerr << "Can not open file: " << old_path << std::endl;
-      return false;
-    }
-  } else {
-    perror("opendir");
+  }
+  if (!logFile_.is_open()) {
+    std::cerr << "Can not open file: " << old_path << std::endl;
     return false;
   }
+
   return true;
 }
 #endif

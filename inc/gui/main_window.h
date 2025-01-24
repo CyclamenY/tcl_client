@@ -15,8 +15,13 @@ class MainWindow : public QMainWindow {
 public:
   MainWindow(QWidget *parent = nullptr);
   ~MainWindow();
+  bool initUi();
 private:
   Ui::MainWindow* ui;
+
+  // menubar menu
+  QMenu* menu_tools_;
+  QAction* action_about_;
 };
 
 #endif

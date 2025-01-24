@@ -1,10 +1,10 @@
 # set library name
-set(LIB_NAME tcl)
+set(LIB_NAME utility)
 # genearer library
-add_library(${LIB_NAME} STATIC tcl_command.cc register_commands.cc)
+add_library(${LIB_NAME} STATIC utility_file.cc)
 # add header file
 target_sources(${LIB_NAME} PRIVATE 
-  ${CMAKE_SOURCE_DIR}/inc/${LIB_NAME}/tcl_command.h
+  ${CMAKE_SOURCE_DIR}/inc/${LIB_NAME}/utility.h
 )
 # set include directory
 target_include_directories(${LIB_NAME} PUBLIC ${CMAKE_SOURCE_DIR}/inc)
