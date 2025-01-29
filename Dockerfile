@@ -5,6 +5,7 @@ WORKDIR /workspace
 # copy code to workspace
 COPY . .
 # install isstenal build component
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -y && \
     apt-get install -y build-essential cmake qt5-default qtbase5-dev && \
     apt-get clean all
