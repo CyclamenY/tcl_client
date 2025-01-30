@@ -1,5 +1,8 @@
-set(REF_LIB ${REF_LIB_TOP_PATH}/tcl8.6.15/lib/tcl86tg.lib 
-            ${REF_LIB_TOP_PATH}/tcl8.6.15/lib/tclstub86.lib)
+if(ARCH STREQUAL "x86_64")
+  set(REF_LIB ${REF_LIB_TOP_PATH}/tcl8.6.15/lib/tcl86tg.lib 
+              ${REF_LIB_TOP_PATH}/tcl8.6.15/lib/tclstub86.lib
+              ${REF_LIB_TOP_PATH}/serial/serial.lib)
+endif()
 
 # add executable
 add_executable(${PROJECT_NAME} main.cc)

@@ -6,17 +6,6 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-include(proj.cmake)
-
-include_directories(inc)                                # private include
-include_directories(ref/x86_64/lib/tcl8.6.15/include)   # 3rd lib include
-include_directories(${CMAKE_PREFIX_PATH}/include)       # Qt5 include
-foreach(_module ${QT_MODULES})
-  find_package(QT NAMES Qt5 REQUIRED COMPONENTS ${_module})
-  find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS ${_module})
-  include_directories(${CMAKE_PREFIX_PATH}/include/Qt${_module})
-endforeach()
-
 if(NOT CMAKE_BUILD_TYPE)
   message("Not select build type, default: Release")
   set(CMAKE_BUILD_TYPE "Release")
@@ -31,7 +20,7 @@ if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /O3 /MD")
   endif()
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
-  elseif(LINUX or MINGW)
+elseif(LINUX or MINGW)
   set(ARCH "linux64")
   if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall")
@@ -39,6 +28,20 @@ if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
   endif()
 endif()
+
+include(proj.cmake)
+
+include_directories(inc)                                # private include
+# 3rd lib include
+include_directories(${REF_LIB_TOP_PATH}/tcl8.6.15/include)
+include_directories(${REF_LIB_TOP_PATH}/serial/include)
+
+include_directories(${CMAKE_PREFIX_PATH}/include)       # Qt5 include
+foreach(_module ${QT_MODULES})
+  find_package(QT NAMES Qt5 REQUIRED COMPONENTS ${_module})
+  find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS ${_module})
+  include_directories(${CMAKE_PREFIX_PATH}/include/Qt${_module})
+endforeach()
 
 message(STATUS "C Tool Chain: ${CMAKE_C_COMPILER}")
 message(STATUS "C++ Tool Chain: ${CMAKE_CXX_COMPILER}")
