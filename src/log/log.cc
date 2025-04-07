@@ -60,6 +60,7 @@ std::string Log::locLogDir() {
 }
 
 bool Log::createWindowsLogFile(std::string& path) {
+  Utility::createDir(path);
   int max_num = 0;
   std::vector<std::string> fileVec;
 
@@ -103,6 +104,7 @@ bool Log::createWindowsLogFile(std::string& path) {
 
 #ifndef WIN32
 bool Log::createLinuxLogFile(std::string& path) {
+  Utility::createDir(path);
   int max_num = 0;
   std::vector<std::string> fileVec;
 

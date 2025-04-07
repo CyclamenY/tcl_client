@@ -32,7 +32,7 @@ std::string Utility::getCurrentPwdPath() {
   return running_path;
 }
 
-void Utility::getDirFiles(std::string target_path, std::vector<std::string>& file_vec) {
+void Utility::getDirFiles(const std::string& target_path, std::vector<std::string>& file_vec) {
 #ifdef WIN32
   WIN32_FIND_DATA findFileData;
   HANDLE hFind = INVALID_HANDLE_VALUE;
@@ -70,4 +70,35 @@ void Utility::getDirFiles(std::string target_path, std::vector<std::string>& fil
     return;
   }
 #endif
+}
+
+bool Utility::createDir(const std::string& path) {
+  std::string temp_path = path;
+#ifdef WIN32
+  std::replace(temp_path.begin(), temp_path.end(), '\\', '/');
+#endif
+  auto pos = temp_path.find_first_of('/');
+  while (pos != std::string::npos) {
+    std::string sub_path = temp_path.substr(0, pos);
+#ifdef WIN32
+    if (_access(sub_path.c_str(), 0) == -1) {
+      CreateDirectory(sub_path.c_str(), 0);
+    }
+#else
+    if (access(sub_path.c_str(), F_OK) == -1) {
+      mkdir(sub_path, S_IRWXU | S_IRWXG | S_IROTH);
+    }
+#endif
+    pos = temp_path.find_first_of('/', pos + 1);
+  }
+#ifdef WIN32
+  if (_access(temp_path.c_str(), 0) == -1) {
+    CreateDirectory(temp_path.c_str(), 0);
+  }
+#else
+  if (access(temp_path.c_str(), F_OK) == -1) {
+    mkdir(temp_path.c_str(), S_IRWXU | S_IRWXG | S_IROTH);
+  }
+#endif
+  return true;
 }
