@@ -28,7 +28,7 @@ jobs:
         host: 'windows'
         target: 'desktop'
         arch: 'win64_msvc2019_64'
-        modules: 'qtcharts qtwebengine qtsvg'
+        #modules: 'qtcharts qtwebengine qtsvg'
         tools: 'tools_ifw'
         cache: 'true'
         #install-deps: 'true'
