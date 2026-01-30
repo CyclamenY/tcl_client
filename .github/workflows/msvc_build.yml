@@ -27,10 +27,13 @@ jobs:
         host: 'windows'
         target: 'desktop'
         arch: 'win64_msvc2019_64'
-        install-deps: 'true'
-        modules: 'qtcharts qtwebengine'
-        archives: 'qtbase qtsvg'
-        tools: 'tools_ifw tools_qtcreator,qt.tools.qtcreator'
+        modules: 'qtcharts qtwebengine qtsvg'
+        tools: 'tools_ifw'
+        cache: 'true'
+        #install-deps: 'true'
+        #modules: 'qtcharts qtwebengine'
+        #archives: 'qtbase qtsvg'
+        #tools: 'tools_ifw tools_qtcreator,qt.tools.qtcreator'
 
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v2
