@@ -48,12 +48,16 @@ int Commands::registerCmd(Tcl_Interp* interp, const std::string cmdName, const s
   // parse param
   std::istringstream iss(cmdOptions);
   std::string last_option = "";
-  for (std::string token; iss >> token;) {
+  int index = 0;
+  for (std::string token; iss >> token; ++index) {
     if (token[0] == '-') {
       last_option = token;
       args_[cmdId][token] = OptionType::kNone;
       continue;
-    }
+    } else if (index == 0 && token[0] == '<') {
+      last_option = "dummy";
+    } else
+      return TCL_ERROR;
     if (last_option.empty())
       return TCL_ERROR;
     if(token == "<string>")
@@ -97,43 +101,61 @@ int Commands::preRun(const int objc, Tcl_Obj* const objv[]) {
   // parse param
   for (int i = 1; i < objc; ++i) {
     std::string option = Tcl_GetString(objv[i]);
-    if (option.length() && option[0] == '-') {
+    if (option.empty())
+      continue;
+    Commands::OptionType optionType;
+    bool dummy_flag = false;
+    if (option[0] == '-') {   // option
       auto iter = args.find(option);
       if (iter == args.end()) {
         Log::printError("Error option %s\n", option.c_str());
         return TCL_ERROR;
       }
-      switch (iter->second) {
-        case Commands::OptionType::kString: {
-          if (i + 1 > objc) return TCL_ERROR;
-          std::string next_option = Tcl_GetString(objv[i + 1]);
-          if (next_option.empty()) return TCL_ERROR;
-          if (next_option[0] == '-') return TCL_ERROR;
-          break;
-        }
-        case Commands::OptionType::kBool: {
-          if (i + 1 > objc) return TCL_ERROR;
-          std::string next_option = Tcl_GetString(objv[i + 1]);
-          if (next_option.empty()) return TCL_ERROR;
-          if (next_option[0] == '-') return TCL_ERROR;
-          if (next_option != "true" && next_option != "false") return TCL_ERROR;
-          break;
-        }
-        case Commands::OptionType::kInt: {
-          if (i + 1 > objc) return TCL_ERROR;
-          std::string next_option = Tcl_GetString(objv[i + 1]);
-          if (next_option.empty()) return TCL_ERROR;
-          if (next_option[0] == '-') return TCL_ERROR;
-          try {
-            std::stoi(next_option);
-          } catch (...) {
-            return TCL_ERROR;
-          }
-          break;
-        }
-        case Commands::OptionType::kNone:
-        default: break;
+      optionType = iter->second;
+    } else if (i == 1) {
+      auto iter = args.find("dummy");
+      if (iter == args.end()) {
+        Log::printError("Error option dummy\n");
+        return TCL_ERROR;
       }
+      optionType = iter->second;
+      dummy_flag = true;
+    } else {
+      Log::printError("Unexpected param.\n");
+      return TCL_ERROR;
+    }
+    int option_index = i + !dummy_flag;
+    switch (optionType) {
+      case Commands::OptionType::kString: {
+        if (option_index > objc) return TCL_ERROR;
+        std::string next_option;
+        next_option = Tcl_GetString(objv[option_index]);
+        if (next_option.empty()) return TCL_ERROR;
+        if (next_option[0] == '-') return TCL_ERROR;
+        break;
+      }
+      case Commands::OptionType::kBool: {
+        if (option_index > objc) return TCL_ERROR;
+        std::string next_option = Tcl_GetString(objv[option_index]);
+        if (next_option.empty()) return TCL_ERROR;
+        if (next_option[0] == '-') return TCL_ERROR;
+        if (next_option != "true" && next_option != "false") return TCL_ERROR;
+        break;
+      }
+      case Commands::OptionType::kInt: {
+        if (option_index > objc) return TCL_ERROR;
+        std::string next_option = Tcl_GetString(objv[option_index]);
+        if (next_option.empty()) return TCL_ERROR;
+        if (next_option[0] == '-') return TCL_ERROR;
+        try {
+          std::stoi(next_option);
+        } catch (...) {
+          return TCL_ERROR;
+        }
+        break;
+      }
+      case Commands::OptionType::kNone:
+      default: break;
     }
   }
   instance_->start_ = std::chrono::high_resolution_clock::now();
