@@ -3,8 +3,8 @@ if(NOT DEFINED QT_ROOT_DIR)
   set(QT_ROOT_DIR "C:/code_env/Qt/msvc2022_x64")  # for native build
 endif()
 set(CMAKE_PREFIX_PATH "${QT_ROOT_DIR}")
-set(MY_PATH "C:/code_env/Qt/msvc2022_x64/bin;C:/code_env/tcl8.6.15/bin")
-set(QT_QPA_PLATFORM_PLUGIN_PATH "C:/code_env/Qt/msvc2022_x64/plugins/platforms")
+set(MY_PATH "${QT_ROOT_DIR}/bin;C:/code_env/tcl8.6.15/bin")
+set(QT_QPA_PLATFORM_PLUGIN_PATH "${QT_ROOT_DIR}/plugins/platforms")
 
 set(QT_MODULES "Widgets" "Core")
 set(QT_DLLS "Widgets" "Gui" "Core")

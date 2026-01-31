@@ -36,5 +36,5 @@ build/*
 lib/*
 *.conf
 src/main/param.def
-proj.cmake
 .vscode/*
+script/cmake_build.bat
