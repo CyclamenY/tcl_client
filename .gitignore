@@ -37,3 +37,4 @@ lib/*
 *.conf
 src/main/param.def
 proj.cmake
+.vscode/*

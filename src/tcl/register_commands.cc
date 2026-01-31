@@ -12,7 +12,7 @@ int RegisterAllCmds(Tcl_Interp* interp) {
   commands->setInterp(interp);
 #ifdef _DEBUG
   commands->registerCmd(interp, "add_func", "-test -test1 <string>", AddFunc);
-  commands->registerCmd(interp, "serial_test", "", SerialTest);
+  commands->registerCmd(interp, "serial_test", "<string>", SerialTest);
 #endif
 
   return TCL_OK;
