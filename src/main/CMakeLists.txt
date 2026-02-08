@@ -36,24 +36,24 @@ add_custom_command(TARGET ${PROJECT_NAME} PRE_BUILD
 )
 
 # copy dll
-# add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-#   COMMAND ${CMAKE_COMMAND} -E copy_directory
-#   "${CMAKE_SOURCE_DIR}/ref/${ARCH}/dll" 
-#   "${CMAKE_BINARY_DIR}/bin"
-#   COMMENT "Copying dll files to ${CMAKE_BINARY_DIR}/bin"
-# )
-# foreach(_dll ${QT_DLLS})
-#   if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-#     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-#       COMMAND ${CMAKE_COMMAND} -E copy
-#       "\"${CMAKE_PREFIX_PATH}/bin/Qt${QT_VERSION_MAJOR}${_dll}d.dll\""
-#       "\"${CMAKE_BINARY_DIR}/bin\""
-#     )
-#   elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-#     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-#       COMMAND ${CMAKE_COMMAND} -E copy
-#       "\"${CMAKE_PREFIX_PATH}/bin/Qt${QT_VERSION_MAJOR}${_dll}.dll\""
-#       "\"${CMAKE_BINARY_DIR}/bin\""
-#   )
-#   endif()
-# endforeach()
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+  "${CMAKE_SOURCE_DIR}/ref/${ARCH}/dll" 
+  "${CMAKE_BINARY_DIR}/bin"
+  COMMENT "Copying dll files to ${CMAKE_BINARY_DIR}/bin"
+)
+foreach(_dll ${QT_DLLS})
+  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy
+      "\"${CMAKE_PREFIX_PATH}/bin/Qt${QT_VERSION_MAJOR}${_dll}d.dll\""
+      "\"${CMAKE_BINARY_DIR}/bin\""
+    )
+  elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy
+      "\"${CMAKE_PREFIX_PATH}/bin/Qt${QT_VERSION_MAJOR}${_dll}.dll\""
+      "\"${CMAKE_BINARY_DIR}/bin\""
+  )
+  endif()
+endforeach()
