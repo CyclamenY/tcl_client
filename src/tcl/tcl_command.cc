@@ -1,4 +1,5 @@
 #include "tcl/tcl_command.h"
+#include "utility/utility.h"
 #include "log/log.h"
 
 #include <algorithm>
@@ -46,28 +47,31 @@ int Commands::registerCmd(Tcl_Interp* interp, const std::string cmdName, const s
   int cmdId = commands_.size() - 1;
 
   // parse param
-  std::istringstream iss(cmdOptions);
-  std::string last_option = "";
+  std::vector<std::string> split_str;
+  Utility::String::split(cmdOptions, split_str);
   int index = 0;
-  for (std::string token; iss >> token; ++index) {
-    if (token[0] == '-') {
-      last_option = token;
-      args_[cmdId][token] = OptionType::kNone;
-      continue;
-    } else if (index == 0 && token[0] == '<') {
-      last_option = "dummy";
-    } else
-      return TCL_ERROR;
-    if (last_option.empty())
-      return TCL_ERROR;
-    if(token == "<string>")
-      args_[cmdId][last_option] = OptionType::kString;
-    else if(token == "<bool>")
-      args_[cmdId][last_option] = OptionType::kBool;
-    else if(token == "<int>")
-      args_[cmdId][last_option] = OptionType::kInt;
-    else {
-      args_[cmdId][last_option] = OptionType::kNull;
+  while(index < split_str.size()) {
+    const std::string& token = split_str[index];
+    if (token.at(0) == '-') {
+      if (index < split_str.size() && split_str[index + 1].at(0) == '<') {
+        // see next string is not this one param
+        if (token == "<string>")
+          args_[cmdId][token] = OptionType::kString;
+        else if (token == "<bool>")
+          args_[cmdId][token] = OptionType::kBool;
+        else if (token == "<int>")
+          args_[cmdId][token] = OptionType::kInt;
+        index += 2;
+      } else {
+        // next is not this one param
+        args_[cmdId][token] = OptionType::kNone;
+        index += 1;
+      }
+    } else if (index == 0 && token.at(0) == '<') {
+      args_[cmdId]["-dummy_first"] = OptionType::kNone;
+      index += 1;
+    } else {
+      Log::printError("TCL %s Cmd format error.\n", split_str.at(0).c_str());
       return TCL_ERROR;
     }
   }
@@ -113,7 +117,7 @@ int Commands::preRun(const int objc, Tcl_Obj* const objv[]) {
       }
       optionType = iter->second;
     } else if (i == 1) {
-      auto iter = args.find("dummy");
+      auto iter = args.find("-dummy_first");
       if (iter == args.end()) {
         Log::printError("Error option dummy\n");
         return TCL_ERROR;

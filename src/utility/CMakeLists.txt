@@ -1,7 +1,7 @@
 # set library name
 set(LIB_NAME utility)
 # genearer library
-add_library(${LIB_NAME} STATIC utility_file.cc)
+add_library(${LIB_NAME} STATIC utility_file.cc utility_string.cc)
 # add header file
 target_sources(${LIB_NAME} PRIVATE 
   ${CMAKE_SOURCE_DIR}/inc/${LIB_NAME}/utility.h

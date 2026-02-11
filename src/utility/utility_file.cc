@@ -16,7 +16,7 @@
 #include <dirent.h>
 #endif
 
-std::string Utility::getCurrentPwdPath() {
+std::string Utility::File::getCurrentPwdPath() {
   std::string running_path = "";
 #ifdef WIN32
   char buffer[MAX_PATH];
@@ -32,7 +32,7 @@ std::string Utility::getCurrentPwdPath() {
   return running_path;
 }
 
-void Utility::getDirFiles(const std::string& target_path, std::vector<std::string>& file_vec) {
+void Utility::File::getDirFiles(const std::string& target_path, std::vector<std::string>& file_vec) {
 #ifdef WIN32
   WIN32_FIND_DATA findFileData;
   HANDLE hFind = INVALID_HANDLE_VALUE;
@@ -72,7 +72,7 @@ void Utility::getDirFiles(const std::string& target_path, std::vector<std::strin
 #endif
 }
 
-bool Utility::createDir(const std::string& path) {
+bool Utility::File::createDir(const std::string& path) {
   std::string temp_path = path;
 #ifdef WIN32
   std::replace(temp_path.begin(), temp_path.end(), '\\', '/');

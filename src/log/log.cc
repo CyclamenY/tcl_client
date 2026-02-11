@@ -54,17 +54,17 @@ Log::~Log() {
 
 std::string Log::locLogDir() {
   std::string running_path = "";
-  running_path = Utility::getCurrentPwdPath();
+  running_path = Utility::File::getCurrentPwdPath();
   running_path += "\\logfiles";
   return running_path;
 }
 
 bool Log::createWindowsLogFile(std::string& path) {
-  Utility::createDir(path);
+  Utility::File::createDir(path);
   int max_num = 0;
   std::vector<std::string> fileVec;
 
-  Utility::getDirFiles(path, fileVec);
+  Utility::File::getDirFiles(path, fileVec);
   for (std::string fileName : fileVec) {
     std::string prefix = fileName.substr(0, 10);
     auto pos = fileName.find_last_of('.');
@@ -104,11 +104,11 @@ bool Log::createWindowsLogFile(std::string& path) {
 
 #ifndef WIN32
 bool Log::createLinuxLogFile(std::string& path) {
-  Utility::createDir(path);
+  Utility::File::createDir(path);
   int max_num = 0;
   std::vector<std::string> fileVec;
 
-  Utility::getDirFiles(path, fileVec);
+  Utility::File::getDirFiles(path, fileVec);
   for (std::string fileName : fileVec) {
     std::string prefix = fileName.substr(0, 10);
     auto pos = fileName.find_last_of('.');
